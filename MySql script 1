@@ -1,0 +1,70 @@
+USE covid_hyd;
+SELECT * FROM covid_hyd.hyd_tests;
+
+-- converting data type of date from 'text' to 'date'
+
+UPDATE hyd_tests 
+SET test_date = str_to_date(test_date,"%d-%m-%y");
+
+ALTER TABLE hyd_tests 
+MODIFY test_date DATE;
+
+SELECT test_date, state, population, total_tested, positive, negative, unconfirmed
+FROM hyd_tests
+ORDER BY test_date ASC;
+
+-- inserting auto increment column as primary key 
+
+ALTER TABLE hyd_tests 
+ADD COLUMN sl_num INT AUTO_INCREMENT NOT NULL PRIMARY KEY;
+
+SELECT sl_num, test_date, state, population, total_tested, positive, negative, unconfirmed
+FROM hyd_tests
+ORDER BY test_date ASC;
+
+-- cleaning and modifying the data 
+
+DELETE FROM hyd_tests
+WHERE sl_num = 55;
+
+UPDATE hyd_tests 
+SET population = 37220000 
+WHERE population = 0;
+
+-- percentage of total population vs total test performed
+
+SELECT sl_num, test_date, state, population, total_tested,
+	(total_tested/population)*100 as total_test_per
+FROM hyd_tests
+ORDER BY test_date ASC;
+
+-- total test done versus positive and negative cases 
+
+SELECT sl_num, test_date, state, population, total_tested, positive, negative, unconfirmed,
+	(positive/total_tested)*100 as positiveper_test,
+	(negative/total_tested)*100 as negativeper_test
+FROM hyd_tests
+ORDER BY test_date ASC;
+
+-- total positve and negative cases per population
+
+SELECT sl_num, test_date, state, population, positive, negative,
+	(positive/population)*100 as positiveper_population,
+	(negative/population)*100 as negativeper_population
+FROM hyd_tests
+ORDER BY test_date ASC;
+
+-- total positive and negative cases per toatl population
+
+SELECT state,population, max(positive) as max_p, max(negative) as max_n ,
+	max(positive)/population*100 as positiveper_population,
+    max(negative)/population*100 as negativeper_population
+FROM hyd_tests ;
+
+-- max num of positive and negative cases
+
+SELECT state,population, max(positive) as max_p, max(negative) as max_n 
+FROM hyd_tests 
+
+
+
